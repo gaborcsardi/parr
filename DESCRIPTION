@@ -9,5 +9,4 @@ Imports:
     tools
 Suggests:
     methods
-Enhances: snow, nws, Rmpi, parallel
 RoxygenNote: 5.0.1
