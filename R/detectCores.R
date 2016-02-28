@@ -57,14 +57,3 @@ detectCores <-
             NA_integer_
         }
     }
-
-## added in R 3.0.3
-.check_ncores <- function(nc)
-{
-    chk <- tolower(Sys.getenv("_R_CHECK_LIMIT_CORES_", ""))
-    if (nzchar(chk) && (chk != "false") && nc > 2L) {
-        msg <- sprintf("%d simultaneous processes spawned", nc)
-        if(chk == "warn") warning(msg, call. = FALSE, immediate. = TRUE)
-        else stop(msg, call. = TRUE)
-    }
-}
