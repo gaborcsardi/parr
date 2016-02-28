@@ -28,7 +28,7 @@
 # include <config.h> /* for affinity function checks and sigaction */
 #endif
 #define NO_NLS
-#include <Defn.h> // for R_isForkedChild
+static int R_isForkedChild;
 
 #include "parallel.h"
 

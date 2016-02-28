@@ -35,4 +35,4 @@ if (.Platform$OS.type == "windows")
 
 .onUnload <-
 function(libpath)
-    library.dynam.unload("parallel", libpath)
+    library.dynam.unload("parr", libpath)

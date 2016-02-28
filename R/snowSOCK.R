@@ -42,7 +42,7 @@ newPSOCKnode <- function(machine = "localhost", ...,
                  " OUT=", outfile,
                  " TIMEOUT=", timeout,
                  " XDR=", useXDR)
-    arg <- "parallel:::.slaveRSOCK()"
+    arg <- "parr:::.slaveRSOCK()"
     rscript <- if (getClusterOption("homogeneous", options)) {
         shQuote(getClusterOption("rscript", options))
     } else "Rscript"
@@ -190,7 +190,7 @@ print.SOCKnode <- print.SOCK0node <- function(x, ...)
     }
     if (is.na(port)) stop("PORT must be specified")
 
-    ## We should not need to attach parallel, as we are running in the namespace.
+    ## We should not need to attach parr, as we are running in the namespace.
 
     sinkWorkerOutput(outfile)
     msg <- sprintf("starting worker pid=%d on %s at %s\n",

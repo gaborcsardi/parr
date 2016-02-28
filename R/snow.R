@@ -102,10 +102,10 @@ initDefaultClusterOptions <- function(libname)
                     manual = FALSE,
                     methods = TRUE,
                     renice = NA_integer_,
-                    ## rest are unused in parallel
+                    ## rest are unused in parr
                     rhome = R.home(),
                     rlibs = Sys.getenv("R_LIBS"),
-                    scriptdir = file.path(libname, "parallel"),
+                    scriptdir = file.path(libname, "parr"),
                     rprog = file.path(R.home("bin"), "R"),
                     snowlib = .libPaths()[1],
                     useRscript = TRUE, # for use by snow clusters
