@@ -30,9 +30,8 @@ if (.Platform$OS.type == "windows")
     cores <- getOption("mc.cores", NULL)
     if(is.null(cores) && !is.na(nc <- as.integer(Sys.getenv("MC_CORES"))))
         options("mc.cores" = nc)
-    if(.Platform$OS.type == "unix") reg.finalizer(.fin.env, clean_pids, TRUE)
+#    if(.Platform$OS.type == "unix") reg.finalizer(.fin.env, clean_pids, TRUE)
 }
 
-.onUnload <-
-function(libpath)
-    library.dynam.unload("parr", libpath)
+#' @useDynLib parr, .registration = TRUE, .fixes = "C_"
+NULL
