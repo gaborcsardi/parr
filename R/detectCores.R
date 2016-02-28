@@ -21,9 +21,16 @@
 detectCores <-
     if(.Platform$OS.type == "windows") {
         function(all.tests = FALSE, logical = TRUE) {
-            ## result is # cores, logical processors.
-            res <- .Call(C_ncpus, FALSE)
-            ifelse(logical, res[2L], res[1L]);
+          if (logical) {
+            res <- Sys.getenv("NUMBER_OF_PROCESSORS", "1")
+            as.numeric(res)
+          } else {
+            x <- system(
+              "WMIC CPU Get DeviceID,NumberOfCores",
+              intern = TRUE
+            )
+            sum(read.table(text = x, header = TRUE)$NumberOfCores)
+          }
         }
     } else {
         function(all.tests = FALSE, logical = TRUE) {
