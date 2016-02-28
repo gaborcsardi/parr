@@ -32,6 +32,3 @@ if (.Platform$OS.type == "windows")
         options("mc.cores" = nc)
 #    if(.Platform$OS.type == "unix") reg.finalizer(.fin.env, clean_pids, TRUE)
 }
-
-#' @useDynLib parr, .registration = TRUE, .fixes = "C_"
-NULL

@@ -1,4 +1,0 @@
-
-PKG_CFLAGS=-DHAVE_UNISTD_H -DHAVE_CONFIG_H -I.
-
-OBJECTS=fork.o init.o rngstream.o
