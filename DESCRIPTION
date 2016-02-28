@@ -5,6 +5,9 @@ Author: R Core Team
 Maintainer: Gabor Csardi <csardi.gabor@gmail.com>
 Description: Easy to use parallel primitives.
 License: GPL-3
-Imports: tools
-Suggests: methods
+Imports:
+    tools
+Suggests:
+    methods
 Enhances: snow, nws, Rmpi, parallel
+RoxygenNote: 5.0.1
