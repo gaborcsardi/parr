@@ -35,7 +35,9 @@ parallel <- function(...) {
     list(
       calls = exprs,
       output = output$output,
-      messages = output$error
+      messages = output$messages,
+      warnings = output$warn,
+      errors = output$errors
     ),
     class = "parr_output"
   )

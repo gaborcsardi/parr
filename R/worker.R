@@ -33,20 +33,35 @@ slaveLoop <- function(master)
                 ## This uses the message rather than the exception since
                 ## the exception class/methods may not be available on the
                 ## master.
-                handler <- function(e) {
+                errorHandler <- function(e) {
                     success <<- FALSE
-                    structure(conditionMessage(e),
-                              class = c("snow-try-error","try-error"))
+                    ee <- structure(conditionMessage(e),
+                                    class = c("snow-try-error","try-error"))
+                    invokeRestart("recover", ee)
+                }
+
+                warnings <- character()
+                warningHandler <- function(w) {
+                    warnings <<- c(warnings, conditionMessage(w))
+                    invokeRestart("muffleWarning")
                 }
 
                 sinkWorkerOutput(master$rank, master$outfile, master$errfile)
 
                 t1 <- proc.time()
-                value <- tryCatch(do.call(msg$data$fun, msg$data$args, quote = TRUE),
-                                  error = handler)
+
+                value <- withRestarts(
+                  withCallingHandlers(
+                    do.call(msg$data$fun, msg$data$args, quote = TRUE),
+                    warning = warningHandler,
+                    error = errorHandler),
+                  recover = function(e) e
+                )
+
                 t2 <- proc.time()
+
                 value <- list(type = "VALUE", value = value, success = success,
-                              time = t2 - t1, tag = msg$data$tag)
+                              warnings = warnings, time = t2 - t1, tag = msg$data$tag)
 
                 stopSinks()
 

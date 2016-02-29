@@ -24,10 +24,13 @@ scheduler <- function(calls, env) {
 
   callstate <- rep("submitted", length(calls))
   myjob <- rep(0, num_workers)
-  output <- rep(NA_character_, num_workers)
-  error <- rep(NA_character_, num_workers)
+  output <- rep(NA_character_, length(calls))
+  messages <- rep(NA_character_, length(calls))
+  warn <- replicate(length(calls), list())
+  errors <- rep(NA_character_, length(calls))
 
   start <- proc.time()
+  clear_me <- FALSE
 
   repeat {
     while (any(callstate == "submitted") && any(state == "free")) {
@@ -51,24 +54,36 @@ scheduler <- function(calls, env) {
       res <- recvOneData(.reg$default, timeout = 0.25)
 
       if (is.null(res)) {
+        clear_me <- TRUE
         time = spin(proc.time() - start, states = callstate)
         next
       }
 
-      state[[res$n]] <- "free"
-      call <- myjob[[res$n]]
+      state[[res$node]] <- "free"
+      call <- myjob[[res$node]]
       callstate[[call]] <- "done"
+
+      ## Collect output
+      output[call] <- read_file(.reg$outfiles[res$node])
+      messages[call] <- read_file(.reg$errfiles[res$node])
+      unlink(.reg$outfiles[res$node])
+      unlink(.reg$errfiles[res$node])
+
+      ## Collect warnings
+      warn[[call]] <- res$value$warnings
+
+      ## Handle error
+      if (!res$value$success) {
+        errors[call] <- as.character(res$value$value)
+        next
+      } else {
+        errors[call] <- ""
+      }
 
       ## Assign it if needed
       if (!is.null(calls[[call]]$result)) {
         assign(as.character(calls[[call]]$result), res$value$value, envir = env)
       }
-
-      ## Collect output
-      output[call] <- read_file(.reg$outfiles[res$n])
-      error[call] <- read_file(.reg$errfiles[res$n])
-      unlink(.reg$outfiles[res$n])
-      unlink(.reg$errfiles[res$n])
     }
 
     if (all(callstate == "done")) {
@@ -78,7 +93,7 @@ scheduler <- function(calls, env) {
 
   .reg$state <- state
 
-  clear_line()
+  if (clear_me) clear_line()
 
-  list(output = output, error = error)
+  list(output = output, messages = messages, errors = errors, warning = warn)
 }
