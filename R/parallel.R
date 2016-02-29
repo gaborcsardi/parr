@@ -1,5 +1,19 @@
 
+#' Evaluate R expressions in parallel
+#'
+#' @param ... The expressions to evaluate. Assignments assign to
+#'   the parent environment, see examples below.
+#' @return Nothing, currently.
+#'
 #' @export
+#' @examples
+#' x <- 1:10
+#' parallel(
+#'   y1 <- x + 1,
+#'   y2 <- x * 2
+#' )
+#' y1
+#' y2
 
 parallel <- function(...) {
 
@@ -49,6 +63,8 @@ parse_call <- function(call, env) {
   res
 }
 
+#' Schedule tasks to workers
+#'
 #' Worker states:
 #' * free
 #' * busy
@@ -58,6 +74,13 @@ parse_call <- function(call, env) {
 #' * submitted
 #' * running
 #' * done
+#'
+#' @param calls List of calls to schedule
+#' @param env Environment to assign results to, for assignment
+#'   expressions.
+#' @return Nothing, currently.
+#'
+#' @keywords internal
 
 scheduler <- function(calls, env) {
   num_workers <- length(.reg$default)

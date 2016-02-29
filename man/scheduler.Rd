@@ -2,17 +2,30 @@
 % Please edit documentation in R/parallel.R
 \name{scheduler}
 \alias{scheduler}
-\title{Worker states:
-* free
-* busy
-* done}
+\title{Schedule tasks to workers}
 \usage{
 scheduler(calls, env)
 }
+\arguments{
+\item{calls}{List of calls to schedule}
+
+\item{env}{Environment to assign results to, for assignment
+expressions.}
+}
+\value{
+Nothing, currently.
+}
 \description{
+Worker states:
+* free
+* busy
+* done
+}
+\details{
 Call states:
 * submitted
 * running
 * done
 }
+\keyword{internal}
 
