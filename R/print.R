@@ -40,6 +40,9 @@ format_header <- function(text, symb) {
   )
 }
 
+
+#' @importFrom utils head tail
+
 format_output <- function(text, marker = "  > ") {
   lines <- strsplit(text, "\n", fixed = TRUE)[[1]]
   lines <- substr(lines, 1, 75)
