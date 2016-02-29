@@ -17,6 +17,7 @@ Nothing, currently.
 Evaluate R expressions in parallel
 }
 \examples{
+\dontrun{
 x <- 1:10
 parallel(
   y1 <- x + 1,
@@ -24,5 +25,6 @@ parallel(
 )
 y1
 y2
+}
 }
 

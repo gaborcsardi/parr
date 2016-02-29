@@ -7,6 +7,7 @@
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' x <- 1:10
 #' parallel(
 #'   y1 <- x + 1,
@@ -14,6 +15,7 @@
 #' )
 #' y1
 #' y2
+#' }
 
 parallel <- function(...) {
 
