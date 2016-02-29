@@ -39,11 +39,12 @@ newPSOCKnode <- function(machine = "localhost", ...,
 
     ## build the local command for starting the worker
     env <- paste0("MASTER=", master,
-                 " PORT=", port,
-                  " OUT=", outfile,
-                  " ERR=", errfile,
-                 " TIMEOUT=", timeout,
-                 " XDR=", useXDR)
+                  " RANK=", rank,
+                  " PORT=", port,
+                  " OUT=", if (length(outfile) > 1) outfile[rank] else outfile,
+                  " ERR=", if (length(errfile) > 1) errfile[rank] else errfile,
+                  " TIMEOUT=", timeout,
+                  " XDR=", useXDR)
     arg <- "parr:::.slaveRSOCK()"
     rscript <- if (getClusterOption("homogeneous", options)) {
         shQuote(getClusterOption("rscript", options))
@@ -160,13 +161,13 @@ print.SOCKnode <- print.SOCK0node <- function(x, ...)
 
 .slaveRSOCK <- function()
 {
-    makeSOCKmaster <- function(master, port, timeout, useXDR)
+    makeSOCKmaster <- function(master, port, timeout, useXDR, ...)
     {
         port <- as.integer(port)
         ## maybe use `try' and sleep/retry if first time fails?
         con <- socketConnection(master, port = port, blocking = TRUE,
                                 open = "a+b", timeout = timeout)
-        structure(list(con = con),
+        structure(c(list(con = con), list(...)),
                   class = if(useXDR) "SOCKnode" else "SOCK0node")
     }
 
@@ -184,6 +185,7 @@ print.SOCKnode <- print.SOCK0node <- function(x, ...)
         name <- substr(a, 1L, pos - 1L)
         value <- substr(a, pos + 1L, nchar(a))
         switch(name,
+               RANK = {rank <- value},
                MASTER = {master <- value},
                PORT = {port <- value},
                OUT = {outfile <- value},
@@ -193,12 +195,13 @@ print.SOCKnode <- print.SOCK0node <- function(x, ...)
     }
     if (is.na(port)) stop("PORT must be specified")
 
-    ## We should not need to attach parr, as we are running in the namespace.
-
-    sinkWorkerOutput(outfile, errfile)
-    msg <- sprintf("starting worker pid=%d on %s at %s\n",
-                   Sys.getpid(), paste(master, port, sep = ":"),
-                   format(Sys.time(), "%H:%M:%OS3"))
-    cat(msg)
-    slaveLoop(makeSOCKmaster(master, port, timeout, useXDR))
+    ## sinkWorkerOutput(rank, outfile, errfile)
+    ## msg <- sprintf("starting worker pid=%d on %s at %s\n",
+    ##                Sys.getpid(), paste(master, port, sep = ":"),
+    ##                format(Sys.time(), "%H:%M:%OS3"))
+    ## cat(msg)
+    slaveLoop(makeSOCKmaster(
+      master, port, timeout, useXDR, outfile = outfile, rank = rank,
+      errfile = errfile
+    ))
 }

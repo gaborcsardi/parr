@@ -24,6 +24,8 @@ scheduler <- function(calls, env) {
 
   callstate <- rep("submitted", length(calls))
   myjob <- rep(0, num_workers)
+  output <- rep(NA_character_, length(calls))
+  error <- rep(NA_character_, length(calls))
 
   repeat {
     while (any(callstate == "submitted") && any(state == "free")) {
@@ -53,6 +55,12 @@ scheduler <- function(calls, env) {
       if (!is.null(calls[[call]]$result)) {
         assign(as.character(calls[[call]]$result), res$value$value, envir = env)
       }
+
+      ## Collect output
+      output[call] <- read_file(.reg$outfiles[call])
+      error[call] <- read_file(.reg$errfiles[call])
+      unlink(.reg$outfiles[call])
+      unlink(.reg$errfiles[call])
     }
 
     if (all(callstate == "done")) {
@@ -62,5 +70,5 @@ scheduler <- function(calls, env) {
 
   .reg$state <- state
 
-  invisible()
+  list(output = output, error = error)
 }

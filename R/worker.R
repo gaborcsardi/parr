@@ -38,19 +38,25 @@ slaveLoop <- function(master)
                     structure(conditionMessage(e),
                               class = c("snow-try-error","try-error"))
                 }
+
+                sinkWorkerOutput(master$rank, master$outfile, master$errfile)
+
                 t1 <- proc.time()
                 value <- tryCatch(do.call(msg$data$fun, msg$data$args, quote = TRUE),
                                   error = handler)
                 t2 <- proc.time()
                 value <- list(type = "VALUE", value = value, success = success,
                               time = t2 - t1, tag = msg$data$tag)
+
+                stopSinks()
+
                 sendData(master, value)
             }
         }, interrupt = function(e) NULL)
 }
 
 ## NB: this only sinks the connections, not C-level stdout/err.
-sinkWorkerOutput <- function(outfile, errfile)
+sinkWorkerOutput <- function(rank, outfile, errfile)
 {
     if (nzchar(outfile)) {
         if (.Platform$OS.type == "windows" && outfile == "/dev/null")
@@ -65,6 +71,11 @@ sinkWorkerOutput <- function(outfile, errfile)
             outfile <- "nul:"
         ## all the workers log to the same file.
         errcon <- file(errfile, open = "a")
-        sink(outcon, type = "message")
+        sink(errcon, type = "message")
     }
+}
+
+stopSinks <- function() {
+  sink(NULL)
+  sink(NULL, type = "message")
 }
