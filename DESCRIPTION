@@ -6,6 +6,8 @@ Maintainer: Gabor Csardi <csardi.gabor@gmail.com>
 Description: Easy to use parallel primitives.
 License: GPL-3
 Imports:
+    clisymbols,
+    crayon,
     tools
 Suggests:
     methods,
