@@ -1,7 +1,7 @@
 Package: parr
 Version: 3.3.0
 Title: Easy Parallel Computation
-Author: R Core Team
+Author: Gabor Csardi, R Core Team
 Maintainer: Gabor Csardi <csardi.gabor@gmail.com>
 Description: Easy to use parallel primitives.
 License: GPL-3
