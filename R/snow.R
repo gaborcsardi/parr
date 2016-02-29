@@ -134,16 +134,8 @@ setDefaultClusterOptions <- function(...) {
 }
 
 
-makeCluster <-
-    function (spec, type = getClusterOption("type"), ...)
-{
-    switch(type,
-           PSOCK = makePSOCKcluster(spec, ...),
-           FORK = makeForkCluster(spec, ...),
-           SOCK = snow::makeSOCKcluster(spec, ...),
-           MPI = snow::makeMPIcluster(spec, ...),
-           NWS = snow::makeNWScluster(spec, ...),
-           stop("unknown cluster type"))
+makeCluster <- function (spec, ...) {
+  makePSOCKcluster(spec, ...)
 }
 
 
@@ -235,34 +227,3 @@ findRecvOneTag <- function(cl, anytag) {
     list(running = function() FALSE,
          enterSend = function(...) {},
          enterRecv = function(...) {})
-
-
-closeNode.NWSnode <- function(node) snow::closeNode.NWSnode(node)
-
-recvData.MPInode <- function(node) snow::recvData.MPInode(node)
-recvData.NWSnode <- function(node) snow::recvData.NWSnode(node)
-
-recvOneData.MPIcluster <- function(cl) snow::recvOneData.MPIcluster(cl)
-recvOneData.NWScluster <- function(cl) snow::recvOneData.NWScluster(cl)
-
-sendData.MPInode <- function(node, data) snow::sendData.MPInode(node, data)
-sendData.NWSnode <- function(node, data) snow::sendData.NWSnode(node, data)
-
-## these use NextMethod() so need copies.
-stopCluster.MPIcluster <- function(cl) {
-    NextMethod()
-    snow::setMPIcluster(NULL)
-}
-
-stopCluster.spawnedMPIcluster <- function(cl) {
-    comm <- 1
-    NextMethod()
-    Rmpi::mpi.comm.disconnect(comm)
-}
-
-stopCluster.NWScluster <- function(cl) {
-    NextMethod()
-    nws::nwsDeleteWs(cl[[1]]$wsServer, nws::nwsWsName(cl[[1]]$ws))
-    close(cl[[1]]$wsServer)
-}
-
