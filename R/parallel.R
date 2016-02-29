@@ -31,7 +31,7 @@ parallel <- function(...) {
 
   output <- scheduler(calls, env = env)
 
-  structure(
+  res <- structure(
     list(
       calls = exprs,
       output = output$output,
@@ -41,6 +41,8 @@ parallel <- function(...) {
     ),
     class = "parr_output"
   )
+
+  invisible(res)
 }
 
 parse_calls <- function(exprs, env) {
