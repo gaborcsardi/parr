@@ -8,5 +8,6 @@ License: GPL-3
 Imports:
     tools
 Suggests:
-    methods
+    methods,
+    testthat
 RoxygenNote: 5.0.1
