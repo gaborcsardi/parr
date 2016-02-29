@@ -59,7 +59,7 @@ closeNode.default <- function(node) {}
 ## These have SOCK methods
 sendData <- function(node, data) UseMethod("sendData")
 recvData <- function(node) UseMethod("recvData")
-recvOneData <- function(cl) UseMethod("recvOneData")
+recvOneData <- function(cl, timeout) UseMethod("recvOneData")
 
 postNode <- function(con, type, value = NULL, tag = NULL)
     sendData(con, list(type = type, data = value, tag = tag))

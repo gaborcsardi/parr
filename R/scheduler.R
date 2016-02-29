@@ -24,8 +24,10 @@ scheduler <- function(calls, env) {
 
   callstate <- rep("submitted", length(calls))
   myjob <- rep(0, num_workers)
-  output <- rep(NA_character_, length(calls))
-  error <- rep(NA_character_, length(calls))
+  output <- rep(NA_character_, num_workers)
+  error <- rep(NA_character_, num_workers)
+
+  start <- proc.time()
 
   repeat {
     while (any(callstate == "submitted") && any(state == "free")) {
@@ -46,7 +48,13 @@ scheduler <- function(calls, env) {
 
     if (any(callstate == "running")) {
       ## Get the result of at least one worker
-      res <- recvOneData(.reg$default)
+      res <- recvOneData(.reg$default, timeout = 0.25)
+
+      if (is.null(res)) {
+        time = spin(proc.time() - start, states = callstate)
+        next
+      }
+
       state[[res$n]] <- "free"
       call <- myjob[[res$n]]
       callstate[[call]] <- "done"
@@ -57,10 +65,10 @@ scheduler <- function(calls, env) {
       }
 
       ## Collect output
-      output[call] <- read_file(.reg$outfiles[call])
-      error[call] <- read_file(.reg$errfiles[call])
-      unlink(.reg$outfiles[call])
-      unlink(.reg$errfiles[call])
+      output[call] <- read_file(.reg$outfiles[res$n])
+      error[call] <- read_file(.reg$errfiles[res$n])
+      unlink(.reg$outfiles[res$n])
+      unlink(.reg$errfiles[res$n])
     }
 
     if (all(callstate == "done")) {
@@ -69,6 +77,8 @@ scheduler <- function(calls, env) {
   }
 
   .reg$state <- state
+
+  clear_line()
 
   list(output = output, error = error)
 }

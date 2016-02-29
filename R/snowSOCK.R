@@ -110,15 +110,16 @@ sendData.SOCK0node <- function(node, data) serialize(data, node$con, xdr = FALSE
 
 recvData.SOCKnode <- recvData.SOCK0node <- function(node) unserialize(node$con)
 
-recvOneData.SOCKcluster <- function(cl)
+recvOneData.SOCKcluster <- function(cl, timeout = NULL)
 {
     socklist <- lapply(cl, function(x) x$con)
-    repeat {
-        ready <- socketSelect(socklist)
-        if (length(ready) > 0) break;
+    ready <- socketSelect(socklist, timeout = timeout)
+    if (!any(ready)) {
+      NULL
+    } else {
+      n <- which.max(ready) # may need rotation or some such for fairness
+      list(node = n, value = unserialize(socklist[[n]]))
     }
-    n <- which.max(ready) # may need rotation or some such for fairness
-    list(node = n, value = unserialize(socklist[[n]]))
 }
 
 makePSOCKcluster <- function(names, ...)
