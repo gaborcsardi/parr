@@ -50,7 +50,7 @@ slaveLoop <- function(master)
 }
 
 ## NB: this only sinks the connections, not C-level stdout/err.
-sinkWorkerOutput <- function(outfile)
+sinkWorkerOutput <- function(outfile, errfile)
 {
     if (nzchar(outfile)) {
         if (.Platform$OS.type == "windows" && outfile == "/dev/null")
@@ -58,7 +58,13 @@ sinkWorkerOutput <- function(outfile)
         ## all the workers log to the same file.
         outcon <- file(outfile, open = "a")
         sink(outcon)
+    }
+
+    if (nzchar(errfile)) {
+        if (.Platform$OS.type == "windows" && outfile == "/dev/null")
+            outfile <- "nul:"
+        ## all the workers log to the same file.
+        errcon <- file(errfile, open = "a")
         sink(outcon, type = "message")
     }
 }
-

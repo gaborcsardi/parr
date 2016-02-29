@@ -28,6 +28,7 @@ newPSOCKnode <- function(machine = "localhost", ...,
         machine <- machine$host
     }
     outfile <- getClusterOption("outfile", options)
+    errfile <- getClusterOption("errfile", options)
     master <- if (machine == "localhost") "localhost"
     else getClusterOption("master", options)
     port <- getClusterOption("port", options)
@@ -39,7 +40,8 @@ newPSOCKnode <- function(machine = "localhost", ...,
     ## build the local command for starting the worker
     env <- paste0("MASTER=", master,
                  " PORT=", port,
-                 " OUT=", outfile,
+                  " OUT=", outfile,
+                  " ERR=", errfile,
                  " TIMEOUT=", timeout,
                  " XDR=", useXDR)
     arg <- "parr:::.slaveRSOCK()"
@@ -172,6 +174,7 @@ print.SOCKnode <- print.SOCK0node <- function(x, ...)
     master <- "localhost"
     port <- NA_integer_ # no point in getting option on worker.
     outfile <- Sys.getenv("R_SNOW_OUTFILE") # defaults to ""
+    errfile <- Sys.getenv("R_SNOW_ERRFILE") # defaults to ""
     methods <- TRUE
     useXDR <- TRUE
 
@@ -184,6 +187,7 @@ print.SOCKnode <- print.SOCK0node <- function(x, ...)
                MASTER = {master <- value},
                PORT = {port <- value},
                OUT = {outfile <- value},
+               ERR = {errfile <- value},
                TIMEOUT = {timeout <- value},
                XDR = {useXDR <- as.logical(value)})
     }
@@ -191,7 +195,7 @@ print.SOCKnode <- print.SOCK0node <- function(x, ...)
 
     ## We should not need to attach parr, as we are running in the namespace.
 
-    sinkWorkerOutput(outfile)
+    sinkWorkerOutput(outfile, errfile)
     msg <- sprintf("starting worker pid=%d on %s at %s\n",
                    Sys.getpid(), paste(master, port, sep = ":"),
                    format(Sys.time(), "%H:%M:%OS3"))

@@ -95,6 +95,7 @@ initDefaultClusterOptions <- function(libname)
                     homogeneous = TRUE,
                     type = "PSOCK",
                     outfile = "/dev/null",
+                    errfile = "/dev/null",
                     rscript = rscript,
                     rscript_args = character(),
                     user = Sys.i[["user"]],
