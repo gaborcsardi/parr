@@ -1,4 +1,6 @@
 
+#' @export
+
 parallel <- function(...) {
 
   env <- parent.frame()
