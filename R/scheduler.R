@@ -45,7 +45,8 @@ scheduler <- function(calls, env) {
       sendCall(
         .reg$default[[worker]],
         calls[[call]]$fun,
-        lapply(calls[[call]]$args, eval, envir = env)
+        lapply(calls[[call]]$args, eval, envir = env),
+        wd = getwd()
       )
     }
 

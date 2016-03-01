@@ -48,6 +48,8 @@ slaveLoop <- function(master)
 
                 sinkWorkerOutput(master$rank, master$outfile, master$errfile)
 
+                setwd(msg$data$wd)
+
                 t1 <- proc.time()
 
                 value <- withRestarts(
