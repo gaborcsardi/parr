@@ -114,13 +114,11 @@ recreate_pkgs <- function(pkgs) {
   }
 
   for (p in to_detach) {
-    print(paste("detaching", paste0("package:", p)))
     tryCatch(
       detach(paste0("package:", p), character.only = TRUE),
       error = function(e) e
     )
   }
-  print(search())
 }
 
 packages_only <- function(pkgs) {
