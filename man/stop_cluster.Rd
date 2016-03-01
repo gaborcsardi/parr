@@ -10,7 +10,7 @@ stop_cluster()
 Stop the cluster
 }
 \seealso{
-Other cluster.management: \code{\link{show_cluster}},
+Other cluster.management: \code{\link{cluster}},
   \code{\link{start_cluster}}
 }
 

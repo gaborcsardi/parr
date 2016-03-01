@@ -63,29 +63,33 @@ stop_cluster <- function() {
 #' @family cluster management
 #' @export
 
-show_cluster <- function() {
-  if (is.null(.reg$default)) {
-    message("No cluster")
-  }
+cluster <- function() {
 
   df <- list(
     num_workers = length(.reg$default),
     state = .reg$state
   )
 
-  print_cluster(.reg)
+  class(df) <- "parr_cluster"
 
-  invisible(df)
+  df
 }
 
-print_cluster <- function(cluster) {
-  if (is.null(cluster$default)) return()
+#' @export
 
-  cat(
-    sep = "",
-    "parr cluster with ", length(cluster$default), " workers: ",
-    sum(cluster$state == "free"), " free, ",
-    sum(cluster$state == "busy"), " busy.",
-    "\n"
-  )
+print.parr_cluster <- function(x, ...) {
+  if (is.null(x$default)) {
+    cat("No cluster\n")
+
+  } else {
+    cat(
+      sep = "",
+      "parr x with ", length(x$default), " workers: ",
+      sum(x$state == "free"), " free, ",
+      sum(x$state == "busy"), " busy.",
+      "\n"
+    )
+  }
+
+  invisible(x)
 }

@@ -14,7 +14,7 @@ the number of (logical) cores of the machine is used.}
 Start the cluster
 }
 \seealso{
-Other cluster.management: \code{\link{show_cluster}},
+Other cluster.management: \code{\link{cluster}},
   \code{\link{stop_cluster}}
 }
 
