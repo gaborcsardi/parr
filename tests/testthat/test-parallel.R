@@ -6,7 +6,7 @@ test_that("arguments, no assignment", {
   tmp1 <- tempfile()
   tmp2 <- tempfile()
   on.exit(rm(tmp1, tmp2), add = TRUE)
-  
+
   parallel(
     cat("hello1\n", file = tmp1),
     cat("hello2\n", file = tmp2)
@@ -35,6 +35,41 @@ test_that("no expressions", {
 
   expect_silent(
     parallel()
+  )
+
+  stopCluster(.reg$default)
+})
+
+test_that("error if not a call", {
+
+  expect_error(
+    parallel(x <- this_is_good(), "foobar"),
+    "Not a call:"
+  )
+
+  stopCluster(.reg$default)
+})
+
+test_that("errors are handled", {
+
+  f <- function() 1 + "A"
+  x <- parallel(f())
+  expect_equal(
+    x$errors,
+    "non-numeric argument to binary operator"
+  )
+
+  stopCluster(.reg$default)
+})
+
+test_that("spinner is called", {
+
+  with_mock(
+    `parr::spin` = function(...) print("here I am"),
+    expect_output(
+      parallel(Sys.sleep(2)),
+      "here I am"
+    )
   )
 
   stopCluster(.reg$default)
