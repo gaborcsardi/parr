@@ -4,7 +4,6 @@
 #' Worker states:
 #' * free
 #' * busy
-#' * done
 #'
 #' Call states:
 #' * submitted

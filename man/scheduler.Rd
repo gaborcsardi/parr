@@ -19,7 +19,6 @@ Nothing, currently.
 Worker states:
 * free
 * busy
-* done
 }
 \details{
 Call states:
