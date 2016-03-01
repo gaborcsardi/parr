@@ -49,6 +49,7 @@ slaveLoop <- function(master)
                 sinkWorkerOutput(master$rank, master$outfile, master$errfile)
 
                 setwd(msg$data$wd)
+                recreate_pkgs(msg$data$pkgs)
 
                 t1 <- proc.time()
 
@@ -95,4 +96,33 @@ sinkWorkerOutput <- function(rank, outfile, errfile)
 stopSinks <- function() {
   sink(NULL)
   sink(NULL, type = "message")
+}
+
+recreate_pkgs <- function(pkgs) {
+  pkgs <- packages_only(pkgs)
+  mypkgs <- packages_only(search())
+  to_attach <- setdiff(pkgs, mypkgs)
+  to_detach <- setdiff(mypkgs, pkgs)
+
+  ## We do this backwards, so that the final order is more similar
+  ## to the master
+  for (p in rev(to_attach)) {
+    tryCatch(
+      suppressPackageStartupMessages(attachNamespace(p)),
+      error = function(e) e
+    )
+  }
+
+  for (p in to_detach) {
+    print(paste("detaching", paste0("package:", p)))
+    tryCatch(
+      detach(paste0("package:", p), character.only = TRUE),
+      error = function(e) e
+    )
+  }
+  print(search())
+}
+
+packages_only <- function(pkgs) {
+  sub("^package:", "", grep("^package:", pkgs, value = TRUE))
 }
