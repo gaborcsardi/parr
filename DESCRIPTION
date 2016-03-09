@@ -8,7 +8,6 @@ License: GPL-3
 Imports:
     clisymbols,
     crayon,
-    tools,
     utils
 Suggests:
     methods,
