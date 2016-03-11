@@ -62,7 +62,19 @@ parse_call <- function(call, env) {
   } else {
     list(result = NULL, call = call)
   }
-  res$fun <- get(as.character(res$call[[1]]), envir = env, mode = "function")
-  res$args <- as.list(res$call)[-1]
+
+  if (is.call(res$call[[1]]) &&
+      (identical(res$call[[1]][[1]], quote(`::`)) ||
+         identical(res$call[[1]][[1]], quote(`:::`)))) {
+    env <- asNamespace(as.character(res$call[[1]][[2]]))
+    fname <- as.character(res$call[[1]][[3]])
+    res$fun <- get(fname, envir = env, mode = "function")
+    res$args <- as.list(res$call)[-1]
+
+  } else {
+    res$fun <- get(as.character(res$call[[1]]), envir = env, mode = "function")
+    res$args <- as.list(res$call)[-1]
+  }
+
   res
 }
