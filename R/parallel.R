@@ -36,11 +36,25 @@ parallel <- function(...) {
       calls = exprs,
       output = output$output,
       messages = output$messages,
-      warnings = output$warn,
+      warnings = output$warnings,
       errors = output$errors
     ),
     class = "parr_output"
   )
+
+  report_errors(res)
+
+  ## If all is good, we perform the assignments
+
+  for (call in seq_along(calls)) {
+    if (!is.null(calls[[call]]$result)) {
+      assign(
+        as.character(calls[[call]]$result),
+        output$results[[call]],
+        envir = env
+      )
+    }
+  }
 
   invisible(res)
 }

@@ -27,6 +27,7 @@ scheduler <- function(calls, env) {
   messages <- rep(NA_character_, length(calls))
   warn <- replicate(length(calls), list())
   errors <- rep(NA_character_, length(calls))
+  results <- replicate(length(calls), list())
 
   start <- proc.time()
   clear_me <- FALSE
@@ -83,7 +84,7 @@ scheduler <- function(calls, env) {
 
       ## Assign it if needed
       if (!is.null(calls[[call]]$result)) {
-        assign(as.character(calls[[call]]$result), res$value$value, envir = env)
+        results[[call]] <- res$value$value
       }
     }
 
@@ -96,5 +97,11 @@ scheduler <- function(calls, env) {
 
   if (clear_me) clear_line()
 
-  list(output = output, messages = messages, errors = errors, warning = warn)
+  list(
+    results = results,
+    output = output,
+    messages = messages,
+    errors = errors,
+    warnings = warn
+  )
 }
